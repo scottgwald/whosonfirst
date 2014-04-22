@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+
+	<script src="reconnectingwebsocket.js"></script>
+	<script src="msgpack.js"></script>
+	<script src="wearscript-client.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script type="text/javascript">
+
+		var i = 0;
+		var actors = ["Abbott", "Costello"];
+		$(document).on("ready", function(){
+			server = 'wss://api.wearscript.com/ws/aJpyU4ez42q7X4Sa';
+		    Socket = new ReconnectingWebSocket(server);
+		    console.log("Made the socket.");
+		    ws = myWearScriptConnectionFactory(Socket, function (connected) {
+		      console.log('Connected: ' + connected);
+		    });
+
+
+		});
+
+		function myWearScriptConnectionFactory(websocket, glassConnectedCallback) {
+		  function onopen(event) {
+		      console.log('opened');
+		      ws.subscribe('subscriptions', subscription_cb);
+		      ws.subscribe('log', log_cb);
+		      ws.subscribe('urlopen', urlopen_cb);
+		      ws.subscribe('battery', battery_cb);
+		      ws.subscribe('newglass', newglass_cb);
+		      subscription_cb();
+		  }
+		  var ws = new WearScriptConnection(websocket, "webapp", Math.floor(Math.random() * 100000), onopen);
+		  ws.subscribeTestHandler();
+		  function subscription_cb() {
+		    glassConnectedCallback(ws.exists('glass'));
+		      // TODO(brandyn): Only do this once, then provide a button to refresh
+		  }
+		  function battery_cb(channel, message){
+		    var id = message.glassID; 
+		    var level = message.level;
+		    $("#"+id+"-battery a").html(level);
+		  }
+		  function log_cb(channel, message) {
+		      console.log(channel + ': ' + message);
+		      // TODO(brandyn): Have a notification that a log message was sent
+		  }
+		  function gist_modify_cb(channel, gists) {
+		      HACK_GIST_MODIFIED = gists;
+		      console.log('Gist modified');
+		  }
+		  function gist_get_cb(channel, gist) {
+		      window.HACK_GIST = gist;
+		      console.log(channel + ': ' + gist);
+		  }
+		  function urlopen_cb(channel, url) {
+		      window.open(url);
+		  }
+		  function newglass_cb(channel, rand){
+		  	console.log("NEWGLASS: "+rand);
+		  	ws.publish("actor", actors[i%2], rand);
+		  	i = i+1;
+		  }
+		  return ws;
+		}
+	    
+
+	</script>
+	
+</head>
+<body>
+
+</body>
+</html>
