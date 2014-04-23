@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-
+	<script src="jquery-1.11.0.min.js"></script>
 	<script src="reconnectingwebsocket.js"></script>
 	<script src="msgpack.js"></script>
 	<script src="wearscript-client.js"></script>
@@ -11,7 +11,7 @@
 		var i = 0;
 		var actors = ["Abbott", "Costello"];
 		$(document).on("ready", function(){
-			server = 'wss://api.wearscript.com/ws/aJpyU4ez42q7X4Sa';
+			server = 'wss://api.wearscript.com/ws/f4m-I6H6YJJTUf5W';
 		    Socket = new ReconnectingWebSocket(server);
 		    console.log("Made the socket.");
 		    ws = myWearScriptConnectionFactory(Socket, function (connected) {
@@ -40,7 +40,8 @@
 		  function battery_cb(channel, message){
 		    var id = message.glassID; 
 		    var level = message.level;
-		    $("#"+id+"-battery a").html(level);
+		    $("#battery").html(parseInt(level) * 100);
+		    // $("#"+id+"-battery a").html(level);
 		  }
 		  function log_cb(channel, message) {
 		      console.log(channel + ': ' + message);
@@ -70,6 +71,8 @@
 	
 </head>
 <body>
+
+Battery level: <span id="battery"></span>
 
 </body>
 </html>
