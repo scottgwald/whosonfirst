@@ -11,7 +11,8 @@
 		var i = 0;
 		var actors = ["Abbott", "Costello"];
 		$(document).on("ready", function(){
-			server = 'wss://api.wearscript.com/ws/XBjVUB5CtLwKIsQ3';
+			// server = 'wss://api.wearscript.com/ws/XBjVUB5CtLwKIsQ3';
+			server = 'ws://glassprov.media.mit.edu:8080/ws';
 		    Socket = new ReconnectingWebSocket(server);
 		    console.log("Made the socket.");
 		    ws = myWearScriptConnectionFactory(Socket, function (connected) {
@@ -59,7 +60,7 @@
 		      window.open(url);
 		  }
 		  function newglass_cb(channel, rand){
-		  	console.log("NEWGLASS: "+rand);
+		  	console.log("NEWGLASS: " + rand);
 		  	ws.publish("actor", actors[i%2], rand);
 		  	i = i+1;
 		  }
